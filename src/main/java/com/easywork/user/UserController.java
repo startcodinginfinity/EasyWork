@@ -16,8 +16,16 @@ public class UserController {
 	}
 
     @PostMapping
-	public User createUser(@RequestBody User user) {
-		return userService.createUser(user);
+	public UserResponse createUser(@RequestBody User user) {
+    	
+    	
+		User savedUser = userService.createUser(user);
+		
+		return new UserResponse(
+				savedUser.getId(),
+				savedUser.getUsername(),
+				savedUser.getRole());
+				
 	}
 
 }
