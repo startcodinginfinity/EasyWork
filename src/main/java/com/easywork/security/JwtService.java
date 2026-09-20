@@ -13,9 +13,9 @@ import io.jsonwebtoken.security.Keys;
 @Service
 public class JwtService {
 	
-	private static final String SECRET_KEY = "EasyWorkSuperSecretKeyForJWTAuthentication2026";
+	private static final String SECRET_KEY = System.getenv("JWT_SECRET");
 	
-	private static long EXPIRATION_TIME = 1000 * 60 * 60;
+	private static final long EXPIRATION_TIME = 1000 * 60 * 60;
 	
 	private final SecretKey key = Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
 	
@@ -41,7 +41,7 @@ public class JwtService {
 		
 	}
 	
-	public String exttractUsername(String token) {
+	public String extractUsername(String token) {
 		return extractAllClaims(token)
 				.getSubject();
 				

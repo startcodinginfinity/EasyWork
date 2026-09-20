@@ -8,17 +8,21 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.easywork.user.CustomerUserDetailsService;
 
 @Configuration
 public class SecurityConfig {
-	
-	public SecurityConfig(CustomerUserDetailsService customerUserDetailsService) {
+
+	public SecurityConfig(CustomerUserDetailsService customerUserDetailsService,
+			JwtAuthenticationFilter jwtAuthenticationFilter) {
 		this.customerUserDetailsService = customerUserDetailsService;
+		this.jwtAuthenticationFilter = jwtAuthenticationFilter;
 	}
 
 	private final CustomerUserDetailsService customerUserDetailsService;
+	private final JwtAuthenticationFilter jwtAuthenticationFilter;
 	
 	
 	@Bean
@@ -38,11 +42,13 @@ public class SecurityConfig {
 	public SecurityFilterChain chain(HttpSecurity security) {
 		
 		 security.csrf(csrf -> csrf.disable())
+		 .userDetailsService(customerUserDetailsService)
 				.authorizeHttpRequests(auth-> auth
 						.requestMatchers("/api/users").permitAll()
 						.requestMatchers("/api/auth/login").permitAll()
 						.anyRequest().authenticated())
-				.httpBasic(httpBasic -> {});
+				.addFilterBefore(jwtAuthenticationFilter,
+						UsernamePasswordAuthenticationFilter.class);
 		
 		return security.build();
 		
